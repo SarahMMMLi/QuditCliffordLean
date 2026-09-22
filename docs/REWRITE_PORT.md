@@ -1,9 +1,6 @@
-# Source map for the remaining rewrite-completeness proof
+# Source map for the checked Figure 1 completeness proof
 
-This is a source audit and port plan, not a Lean completeness theorem. The
-matrix normal form and generated-group results alone do not prove that equal
-circuits are related by the paper's rewrite rules. The one-qudit completeness
-specialization is now independently proved by syntactic normalization in Lean.
+`Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves exact soundness and completeness at every arity under the selected Figure 1 scalar convention. This document records the source mapping, restricted proof transport, and the separate remaining literal Figure 9 distinction. Matrix classification alone is not used as a replacement for rewrite normalization.
 
 ## Current Lean port
 
@@ -14,8 +11,7 @@ Figure 9 relation. `PresentedPauliNormality.lean`, `PauliWordRewrites.lean`,
 kernel and lift every derivation with a unique correction. Consequently
 `figure1Complete_iff_symplecticErasureComplete` identifies the helper exact
 and erased completeness properties. Both unrestricted properties are false
-at three qutrits, as proved below. The source-restricted target and its
-proof-transport obligation are distinct.
+at three qutrits, as proved below. The source-restricted target is distinct and is now proved by `AdjacentCompleteness.lean`.
 
 The following local cases have been ported to actual exact or erased Figure 1
 derivations, using the literal Figure 6 words and selected raw multipliers:
@@ -34,8 +30,10 @@ derivations, using the literal Figure 6 words and selected raw multipliers:
 All 42 printed case branches are now checked in the named-wire helper
 presentation. Their derivation from the separate literal Figure 9 presentation
 is still open; this table does not assert Theorem 4.4. It also does not by itself
-show that every helper proof can be replayed in the restricted adjacent
-presentation described below. `MultiplierRewrites.lean` and `MultiplierControlledZRewrites.lean` derive
+show restricted replay by itself; that separate proof is now provided by
+`AdjacentTwoWireReplay.lean` and `AdjacentThreeWireReplay.lean`.
+`AdjacentBoxCases.lean` and `AdjacentThreeWireBoxCases.lean` expose all 42
+canonical source branches: 25 exact and 17 explicitly erased. `MultiplierRewrites.lean` and `MultiplierControlledZRewrites.lean` derive
 the all-unit multiplier laws from finite C3 and primitive-generator C4/C9.
 `ThreeWireControlledRewrites.lean` and `ThreeWirePhaseTransport.lean` derive
 the exact adjacent/remote-CZ commutations and reverse C15.
@@ -53,8 +51,8 @@ identity normal word at every arity, with the Figure 6-compatible E(0) seed.
 `XNormalPhaseRewrites.lean` proves phase absorption through every D/E layer by
 an actual recursive exact derivation. `NormalRewriteInduction.lean` supplies
 word induction from a stated gate-closure hypothesis in the helper relation;
-it does not prove that hypothesis. The remaining normalization task must use
-the paper’s adjacent primitive alphabet and source-restricted rewrite relation.
+it does not prove that helper hypothesis. The completed source proof uses
+`AdjacentNormalRewriteInduction` with the proved restricted Z/X sweeps.
 
 ## Adjacent source syntax versus the named-wire helper syntax
 
@@ -79,9 +77,10 @@ a weaker result and is deliberately not used as the main target.
 `Circuit.MainTheorem` now refers to this source-restricted relation. The former
 unrestricted proposition is named `NamedWireMainTheorem`. Zero- and one-qudit
 completeness transfer because all words at those arities are adjacent.
-The 42 helper derivations, recursive sweeps, and Pauli lifting remain valid
-as stated, but their transport to the restricted relation must be supplied
-before using them to prove the paper’s multiwire completeness theorem.
+The 42 helper derivations are now replayed in the restricted relation.
+`AdjacentPauliNormality`, `AdjacentPauliWordRewrites`, `AdjacentPauliKernel`,
+and `AdjacentPauliLifting` establish exact lifting there. The typed Z/X
+sweeps and `AdjacentCompleteness` complete the multiwire normalization proof.
 No coherence equation or semantic-equality rule has been added to conceal
 this distinction.
 
@@ -101,7 +100,8 @@ transport, including opposite-wire H/S transport without reverse-CZ aliases.
 `AdjacentOneWireRewrites.lean` replays any exact one-wire proof on a chosen wire.
 `AdjacentNormalCircuit.lean` and `AdjacentExactNormal.lean` prove the entire
 normal syntax remains adjacent. `AdjacentNormalization.lean` identifies the
-remaining source theorem precisely with restricted exact normalization.
+source theorem precisely with restricted exact normalization, now discharged
+in `AdjacentCompleteness.lean`.
 
 
 ## Pinned external source
@@ -235,7 +235,7 @@ constructor there is the identical equation with identical definitions.
 | C6 | `CZ^d = id` | `order-CZ` |
 | C7 | `SWAP² = id` | `order-Ex` |
 | C8 | upper S commutes with CZ | `comm-CZ-S↑` |
-| C9 | multiplier through CZ with exponent `g⁻¹` | `semi-M↑CZ`, after exponent conversion |
+| C9 | multiplier through CZ with printed exponent `g⁻¹` | Unsound for the stated raw multiplier; the required exponent is `g`. See `Figure9ConventionCounterexample.lean`. |
 | C10 | S transported through SWAP | `semi-Ex-S↑` |
 | C11 | H transported through SWAP | `semi-Ex-H↑` |
 | C12 | CZ commutes with SWAP | `Paper-V0/Lemmas.agda`, `Ex-Conjugation.lemma-Ex-CZ` |
@@ -291,36 +291,32 @@ presentation-comparison step.
    Lean boxes and the release's `Normalization/Section.agda` use the concrete
    Figure 6 definitions. Do not use the stale tables to change those words.
 
-## Remaining Lean route after the alphabet correction
+## Completed Lean route after the alphabet correction
 
-1. Replay the checked local helper derivations in the canonical adjacent
-   presentation. Use `AdjacentDerives` or its explicitly defined scalar/Pauli
-   erasure, including restricted group and cancellation infrastructure.
-   `AdjacentWireRewrites` and `AdjacentOneWireRewrites` begin this replay.
-   Adjacent endpoints alone do not certify that a helper proof stays adjacent.
-2. Prove the recursive Z/X sweeps on `AdjacentWord` and `ZSweepWord`, then
-   normalization under every adjacent primitive generator. The 42 helper
-   branches supply the algebraic chains; their restricted derivations must
-   still be checked. `NormalSweepSyntax` supplies the dirty grammar and its
-   first-wire invariant, not the normalization theorem.
-3. Transport the proved Pauli/scalar lifting to the restricted relation.
-   `Circuit.adjacentFigure1Complete_iff_derivablyNormalizes`
-   in `AdjacentNormalization.lean` records the exact remaining reduction target.
-   All concrete exact normal words are already proved adjacent. Neither
-   semantic uniqueness nor cardinality replaces syntactic reduction.
-4. Separately define the literal eighteen-rule Figure 9 presentation and
-   prove its correspondence with the restricted auxiliary relation and all
-   42 box cases. Preserve its multiplier convention and the selected exact
-   scalar distinction. Only then claim the separate Theorem 4.4 statement.
+1. `AdjacentTwoWireReplay` and `AdjacentThreeWireReplay` replay every helper rule through canonical orientation and routed remote CZ. Pair/triple embeddings preserve adjacency on every intermediate step. The two box-case modules cover all 42 rows.
+2. `AdjacentZNormalHead`, `AdjacentZNormalHeadCZ`, `AdjacentBDirtyPush`, and `AdjacentZNormalSweep` prove the full Z sweep with a typed dirty residual. `AdjacentXNormalPhase`, `AdjacentXNormalPushS/H/CZ`, and `AdjacentXNormalSweep` prove the full X sweep with a typed residual on one fewer wire.
+3. `AdjacentNormalFormSweeps` assembles the two sweeps by arity induction. `AdjacentNormalRewriteInduction` uses the proved identity seed and semantic label uniqueness to obtain erased completeness from actual normalization.
+4. The concrete restricted signed-Pauli subgroup has proved normality, faithful normal words, and exactly the erasure kernel. `AdjacentPauliLifting` restores the unique correction, and `AdjacentCompleteness.mainTheorem` (in namespace `Circuit`) states the exact all-arity result without a normalization premise.
 
-A possible alternative for the exact theorem is to port the release's
-`Paper-V1/Presentation.agda` projective result directly on its adjacent
-alphabet, then replay the scalar lifting in that same alphabet. Its 15
-nonscalar schemas are close to the printed C1–C15, but both convention
-translation and syntactic presentation maps still require proofs. This
-would not automatically establish the separate Figure 9 theorem.
+The literal eighteen-rule Figure 9 relation remains a separate source-convention and presentation-comparison task. Neither the release's fifteen-family `Simplified` theorem nor the proved erased Figure 1 theorem is renamed to assert it. The old unrestricted named-wire completeness target remains formally false.
 
-The former unrestricted `Figure1ProjectiveComplete` is **not** a remaining
-target to prove: its equivalence with the refuted named-wire exact target
-rules out that route. No new coherence axiom or semantic-equality rewrite
-constructor is introduced to repair the mismatch.
+## Checked Figure 9 C9 discrepancy
+
+The supplied PDF p. 24 and `figures/RewriteRules/RewriteRules2.tikz:318` print
+`M_g ; CZ = CZ^(g⁻¹) ; M_g` in temporal order. The caption points to the same
+Figure 2 raw multiplier `M_g|x⟩=|gx⟩`. The manuscript's own exact calculation
+in `scripts/appendix/sectiontwoproofs.tex:994,1011–1012` instead gives
+`CZ*M_g = M_g*CZ^g` in matrix order.
+
+`Figure9ConventionCounterexample.lean` proves that g=2 has order 4 modulo 5
+and that the printed two sides send first-wire X to different second-wire Z
+exponents, 2 and 3. It proves unequal exact matrices and nonderivability even
+in the explicitly Pauli-erased Figure 1 relation. Thus a literal sound
+presentation comparison is impossible. This is not merely a scalar issue,
+and inverting every multiplier convention would also require changing C4.
+
+A future corrected Figure 9 presentation must explicitly replace this exponent
+by g, retain exactly its eighteen families, and derive its Pauli erasure and
+comparison maps. The currently proved Figure 1 main theorem needs none of
+these unproved comparison premises. Unsoundness of the printed rule alone
+does not refute completeness understood only as a one-way derivability claim.

@@ -75,6 +75,8 @@ The Legendre and lambda-square factors are signs and are expressible with `sigma
 7. **Appendix C box actions:** Figure 6 gives `A_0b=M_b`, so its exponent action sends X to `X^b`. Figure 10 in Appendix C prints an additional `Z^(-1)`, incompatible with that concrete multiplier. Also, Figure 6 gives `B_0b=CX^b;SWAP` in temporal order: lower-wire Z is sent to `Z tensor Z^(-b)`. Figure 11 (printed p. 55, row for b outside {0,1}) instead prints `Z^(1/b) tensor Z^(-1)`. The Lean normal-box modules follow Figure 6 and prove its concrete actions; they do not assert the incompatible Appendix C formulas.
 8. **Minor transcription/typing corrections:** `P_n/U(1)` in Section 2.2.4 must mean projectivization by its scalar subgroup; U(1) is not a subgroup of finite P. Scalar unitaries require modulus-one scalars. Equation (52) has an incorrect XIC output; Corollary A.24 gives the correct `|j+k,l,k>`. Lemma 3.7's uniqueness proof has a `WX'` where its argument needs `WZ'`.
 9. **Normal identity seed:** Equation (12) prints `id = A_01 ; E_(d-1)`. Figure 6 gives `A_01=M_1=id` and `E_(d-1)=S`, so these definitions require `E_0` instead. The Lean development keeps Figure 6's concrete boxes; it does not assert the inconsistent identity. See `REWRITE_PORT.md` for the external formal-source comparison.
+10. **Figure 9 C9 exponent:** printed p. 24 uses `g⁻¹` for raw `M_g`, whereas the exact calculation in `scripts/appendix/sectiontwoproofs.tex:994,1011–1012` gives `g`. `Figure9ConventionCounterexample.lean` checks d=5, g=2, proves g primitive, and finds second-wire Z exponents 2 versus 3. The printed equation is neither exact nor symplectically sound. A corrected eighteen-rule relation must be explicitly labelled; global multiplier inversion does not preserve its printed C4. This soundness counterexample does not alone disprove completeness stated only as a one-way derivability property.
+
 
 ## Proof-obligation ledger
 
@@ -101,11 +103,11 @@ This table records what the source requires. It is an audit, not a claim that th
 | A.25-A.28 | Exact soundness of C0-C15 and their congruence closure under the selected convention. |
 | Theorem 4.10 | Instantiate the symplectic-to-projective and projective-to-exact liftings; derive all needed corrected rules from C0-C15; prove a trivial exact residual scalar reduces using C0. Conclude precisely: equal matrix evaluations imply a C0-C15 rewrite derivation. |
 
-The largest remaining source dependency is **Theorem 4.4's eighteen-to-forty-two relation derivation**, together with multiwire box normalization and comparison of the printed presentations. Exact lifting for the explicit scalar/Pauli erasure of Figure 1 is now proved in Lean. These remaining gaps are not repaired merely by giving the 16 relations a semantically defined quotient.
+The largest remaining source dependency is **Theorem 4.4's eighteen-to-forty-two relation derivation**, and comparison of its conventions with the printed Figure 1 presentation. Multiwire normalization and exact Figure 1 completeness are now proved. Exact lifting for the explicit scalar/Pauli erasure of Figure 1 is now proved in Lean. These remaining gaps are not repaired merely by giving the 16 relations a semantically defined quotient.
 
 The cited release has now been pinned and its explicit syntactic proof modules mapped in **[REWRITE_PORT.md](REWRITE_PORT.md)**. That audit distinguishes the release's auxiliary 15-family presentation from the literal 18 displayed relations and locates all 42 box-pushing cases. Inspection of external Agda proofs does not import them into Lean or discharge their Lean port.
 
-Sections 2–3 now have the concrete matrix results needed by the completeness argument: actual primitive realization, cyclotomic scalar classification, the signed-Pauli kernel and quotient, the projective semidirect group law, and unique exact normal words with the adjusted count. `ExactNormalization.lean` proves that Figure 1 completeness is equivalent to deriving each word's concrete normalization. This equivalence concerns the enlarged helper relation; its unrestricted three-qutrit target is now refuted. `AdjacentNormalization.lean` supplies the corresponding equivalence for the corrected source relation, without assuming the missing reduction proofs.
+Sections 2–3 now have the concrete matrix results needed by the completeness argument: actual primitive realization, cyclotomic scalar classification, the signed-Pauli kernel and quotient, the projective semidirect group law, and unique exact normal words with the adjusted count. `ExactNormalization.lean` proves that Figure 1 completeness is equivalent to deriving each word's concrete normalization. This equivalence concerns the enlarged helper relation; its unrestricted three-qutrit target is now refuted. `AdjacentNormalization.lean` supplies the corresponding equivalence for the corrected source relation, with its reduction property now discharged in `AdjacentCompleteness.lean`.
 
 The final scalar lifting omitted by the abbreviated source proof is now instantiated in `ProjectiveRewrites.lean`. The projective relation is explicitly the actual Figure 1 relation plus deletion of a scalar letter. Induction on an erased derivation tracks an exact central scalar correction in the syntactic quotient; C0 gives a natural-power scalar word and removes it when exact matrix equality forces it to be trivial. This proves `figure1Complete_of_projectiveComplete` for those concrete relations. Its conditional input is projective rewriting completeness of the helper relation, which is refuted at three qutrits. The lifting proof must be replayed in the adjacent relation for the paper; scalar correction itself is not assumed.
 
@@ -119,7 +121,7 @@ All six Appendix F one-wire A/E cases are now proved syntactically, and `OneQudi
 
 The encoding uses named wires, so a primitive CZ can be placed on any distinct pair of names and a rule can be injected into any choice of distinct wires. `Structural.disjoint` is interchange of disjoint operations (including central scalar gates); `Structural.CZ_symmetry` identifies the two argument orders for the undirected CZ symbol. These are declared representation-coherence equations and are not semantic-equality rewrite constructors. Their matrix soundness is now proved in `Circuit.structural_sound`. The unrestricted named-wire completeness target is now formally refuted; the corrected paper target uses `AdjacentPresentation`, as detailed below. In particular, formalizing these structural equations must not be advertised as proving any missing Clifford relation-reduction or normal-form theorem.
 
-`Circuit.MainTheorem` now lives in `AdjacentPresentation.lean` and records exact soundness plus completeness for canonical adjacent words under their own restricted contextual relation, at every arity, an odd prime dimension, and a unit g of order d-1. Its soundness component is proved at all arities; `adjacentFigure1Complete_zero/one` establish the two base arities in the restricted relation. The former unrestricted target is named `NamedWireMainTheorem` and is not a transcription of the paper. The combined source-restricted `MainTheorem` remains a proposition to prove, not an axiom, instance, or established theorem. `RelabelRewrites.lean` now proves preservation of every exact and erased schema and derivation under arbitrary injective wire relabeling. The inspection found no alternate-normalizer relation or hidden constructor admitting arbitrary semantic equality.
+`Circuit.MainTheorem` lives in `AdjacentPresentation.lean` and records exact soundness plus completeness for canonical adjacent words under their own restricted contextual relation. `Circuit.mainTheorem` in `AdjacentCompleteness.lean` now proves it at every arity, in every odd prime dimension, for a unit g of order d-1. The former unrestricted target is named `NamedWireMainTheorem` and is not a transcription of the paper. Restricted proof replay, typed Z/X sweeps, and faithful signed-Pauli lifting discharge every normalization premise. No constructor admits arbitrary semantic equality as a rewrite.
 
 
 ### Correction to the named-wire completeness target
@@ -136,10 +138,9 @@ generators and shifts, and `Symplectic/Syntactics/Gates.agda:193–197` defines
 with membership in the canonical adjacent alphabet and takes a new contextual
 closure. It proves that all reachable intermediate words remain adjacent.
 This avoids adding an unproved wiring equation or inferring it from matrix
-soundness. The 42 local cases are now complete in the broader helper relation,
-but their replay in this restricted presentation must still be checked. The
-Pauli lifting likewise needs restricted replay. Existing exact matrix results
-and the one-qudit theorem are unaffected.
+soundness. All 42 local cases now have restricted replay, and the concrete
+Pauli subgroup, kernel, and exact lifting are proved in that same relation.
+The full Z/X sweeps then establish `Circuit.mainTheorem` at every arity.
 
 
 The model mismatch is formally witnessed by `NamedWireCountermodel.lean`.

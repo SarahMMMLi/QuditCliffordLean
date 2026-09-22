@@ -2,7 +2,7 @@
 
 Lean 4 formalization of **A Complete and Natural Rule Set for Multi-Qudit Clifford Circuits in All Odd Prime Dimensions**, by Bian, Li, Ross, van de Wetering, and Zhao.
 
-**Status: partial. Theorem 4.10 is proved for zero and one qudit; completeness for two or more qudits remains open.** Exact soundness holds at every arity. Unfinished results are recorded as proof obligations, not filled with `sorry` or assumed as axioms.
+**Theorem 4.10 is proved at every arity in every odd prime dimension**, with Figure 1's exact scalar convention. `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves soundness and completeness for the paper's adjacent-gate alphabet. The separate literal Figure 9 presentation and documented inconsistent source formulas are not claimed as fully formalized. No proof uses `sorry` or a project-specific axiom.
 
 The selected convention is **Figure 1: exact matrix equality with scalar generator `-ω`**, and raw multipliers `M_a|j⟩=|aj⟩`. Projective equality and symplectic equality remain distinct from exact equality.
 
@@ -30,7 +30,7 @@ On this local checkout, an ignored toolchain and dependency cache are included u
 - The projective generated group is isomorphic to the semidirect product of exponent translations and the symplectic group (Definition 2.28). Every full unitary Pauli normalizer is a unit-modulus scalar times a generated primitive circuit, and the full/generated projective quotients are isomorphic.
 - Cyclotomic ring membership and the exact generated scalar subgroup: precisely the `2d` powers of `-omega` (Propositions 2.5–2.6 and the adapted Proposition 2.17).
 - Concrete Figure 6 A/B/D/E boxes, arbitrary-wire Z/X normalizations, and the literal recursive symplectic normal form with existence and uniqueness (Lemmas 3.4–3.7 and Proposition 3.8). A compiler produces their actual primitive circuit words, with proved matrix-induced exponent actions.
-- Every generated Clifford matrix has a unique exact normal word, including its signed Pauli correction (adapted Proposition 3.13). Counting these normal forms proves `2*d^(n^2+2*n+1) * product_(j=1..n) (d^(2*j)-1)` for the exact group. This is matrix normalization; a derivation of the normal word using Figure 1 remains to be proved.
+- Every generated Clifford matrix has a unique exact normal word, including its signed Pauli correction (adapted Proposition 3.13). Counting these normal forms proves `2*d^(n^2+2*n+1) * product_(j=1..n) (d^(2*j)-1)` for the exact group. The adjacent presentation now also derives its exact normal word using Figure 1.
 - **Exact soundness of all sixteen fully expanded Figure 1 rules and their rewrite closure**, on arbitrary named wires in every odd prime dimension. This is `Circuit.figure1_sound`; completeness is separate.
 - The exact derived X, Z, CX, SWAP, remote-CZ, and multiplier words on arbitrary named wires, including every scalar. The signed quadratic Gauss-sum evaluation and `det(H)=1` are proved using Vandermonde factorization, finite phase sums, and unitarity. The phase-gate and controlled-Z determinants are checked too.
 - Concrete primitive circuits, all sixteen syntactic rewrite schemas, contextual rewriting, and arbitrary-register unitary denotation.
@@ -39,7 +39,8 @@ On this local checkout, an ignored toolchain and dependency cache are included u
 - Syntactic inverse words and cancellation in the named-wire helper presentation; exact Weyl commutation `ZX=omega*XZ`, all H/S/CZ Pauli pushing identities, and SWAP transport. The helper quotient maps surjectively to the generated matrix group. Its unrestricted injectivity is not the paper’s completeness target; see the encoding distinction below.
 - A separate scalar-erased rewrite relation, with a proved lift of every derivation to the exact Figure 1 rules plus an explicit scalar. C0 removes the correction when the matrices are equal, so exact completeness is reduced to completeness of this explicit projective presentation.
 - The signed Pauli subgroup inside the actual Figure 1 word quotient is normal, faithfully interpreted, and has uniquely derivable signed-Pauli normal words. Explicitly deleting scalar/X/Z words gives a syntactic symplectic quotient with exactly this kernel. Every erased derivation lifts with a unique signed-Pauli correction, and exact matrix equality removes that correction.
-- All 42 Appendix F case branches are actual exact or explicitly Pauli-erased derivations in the named-wire helper presentation. This includes all AB, BB, and DD branches. The exact X-normal phase sweep is proved by recursion at every arity. These results still need transport to the source-restricted presentation before claiming its normalization theorem.
+- All 42 Appendix F cases are replayed in the source-restricted adjacent presentation: 25 exact and 17 explicitly Pauli-erased branches. Two- and three-wire replay checks every intermediate rule; remote CZ is compiled through proved SWAP conjugations.
+- Full typed Z/X sweeps, recursive normal-form normalization, and exact signed-Pauli lifting are proved in that same restricted presentation. `adjacentFigure1Complete` and `mainTheorem` establish exact completeness at arbitrary arity, without an unproved normalization premise.
 
 - A kernel-checked countermodel refutes the former unrestricted named-wire target for three qutrits. The corrected target uses the paper’s adjacent primitive alphabet at every derivation step; this is an encoding correction, not a counterexample to the paper. Restricted SWAP transport and arbitrary single-wire proof replay are also established.
 
@@ -47,9 +48,9 @@ The precise theorem-to-paper mapping and remaining hypotheses are in **[docs/STA
 
 ## What remains
 
-The main missing work is source-restricted syntactic normalization for two or more qudits and transport of the established helper proofs into that presentation. The signed-Pauli-and-scalar lifting is proved for the named-wire helper relation, but its arbitrary-arity completeness target was too broad. The separate literal eighteen-rule Figure 9 presentation and its comparison with the forty-two box relations also remain unfinished. [The source and proof map](docs/REWRITE_PORT.md) records the distinctions and current port.
+The printed Figure 9 C9 is unsound under the stated raw multiplier convention: it uses g⁻¹ where the exact calculation gives g. `Figure9ConventionCounterexample.lean` proves the failure at d=5, g=2, even after Pauli erasure. A separately corrected eighteen-rule presentation and its comparison with the forty-two box relations remain to be formalized. It is not identified with scalar/Pauli erasure of Figure 1. [The source and proof map](docs/REWRITE_PORT.md) records the remaining distinction and the paper's inconsistent surrounding formulas.
 
-`QuditClifford.Circuit.MainTheorem` in `AdjacentPresentation.lean` is the corrected **target proposition**, not a theorem asserted at arbitrary arity. It uses adjacent primitive CZ gates and requires adjacent instances at every rewrite step. The former unrestricted target is retained as `NamedWireMainTheorem` for auditing. Figure 4 T7 defines a remote CZ by SWAP expansion; it is not an additional independent primitive. The zero- and one-qudit completeness proofs have been checked in the restricted relation as well. A successful build does not assert the remaining arbitrary-arity proposition.
+`QuditClifford.Circuit.mainTheorem` proves the proposition `MainTheorem` for the selected exact convention. Every generating step stays inside the adjacent alphabet. The former unrestricted target remains named `NamedWireMainTheorem` and has a checked counterexample; Figure 4 T7 defines a remote CZ by SWAP expansion rather than as an independent primitive.
 
 ## Layout and conventions
 

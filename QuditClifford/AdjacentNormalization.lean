@@ -2,12 +2,13 @@ import QuditClifford.AdjacentPresentation
 import QuditClifford.AdjacentExactNormal
 
 /-!
-# The remaining normalization obligation in the source presentation
+# Exact normalization and completeness in the source presentation
 
 The already classified exact normal form is an adjacent word. Therefore
 source-restricted completeness is equivalent to deriving normalization inside
 the source-restricted relation itself. The unrestricted named-wire relation
-is not used to supply the missing derivations.
+is not used to supply derivations. `AdjacentCompleteness.lean` discharges this
+normalization property by the actual restricted Z/X sweeps.
 -/
 
 noncomputable section

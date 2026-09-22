@@ -80,7 +80,7 @@ def AdjacentFigure1Complete (g : (ZMod d)ˣ) : Prop :=
     denote d u = denote d v → AdjacentDerives g u v
 
 /-- Source-faithful target for Theorem 4.10, with Figure 1's exact minus-omega
-scalar. This proposition is not assumed or proved at arbitrary arity. -/
+scalar. `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves it at every arity. -/
 def MainTheorem (d : ℕ) [NeZero d] : Prop :=
   d.Prime → Odd d → ∀ g : (ZMod d)ˣ, orderOf g = d-1 →
     ∀ n, Figure1Sound (n := n) g ∧ AdjacentFigure1Complete (n := n) g
