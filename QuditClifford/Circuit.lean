@@ -9,10 +9,10 @@ A circuit is a word of the paper's primitive `-ω,H,S,CZ` gates on named wires.
 Lists are in MATRIX order (the rightmost gate acts first). Derived X, Z, M,
 CX and SWAP are actual words, not additional primitive generators.
 
-The target propositions at the end are deliberately not asserted as theorems.
-Proving the elementary matrix identities in `Relations.lean` is a separate
-step from proving soundness of these expanded words, and from constructing
-rewrite derivations of every exact matrix equality.
+The propositions at the end separate exact soundness from rewrite
+completeness. `MultiplierSoundness.lean` proves soundness of these fully
+expanded words in odd prime dimension. Constructing rewrite derivations of
+every exact matrix equality remains the positive-arity completeness target.
 -/
 
 noncomputable section
@@ -184,7 +184,8 @@ def Rules (g : (ZMod d)ˣ) (a b : Word n) : Prop := Structural a b ∨ Figure1Ru
 named wires, so idle-wire extensions and injections are covered by the schemas. -/
 def Derives (g : (ZMod d)ˣ) : Word n → Word n → Prop := Presentation.Derives (Rules g)
 
-/-- Unproved soundness obligation for the expanded Figure 1 presentation. -/
+/-- Exact soundness of the expanded Figure 1 presentation. Proved for odd
+prime dimension by `figure1_sound` in `MultiplierSoundness.lean`. -/
 def Figure1Sound (g : (ZMod d)ˣ) : Prop :=
   ∀ a b : Word n, Derives g a b → denote d a = denote d b
 

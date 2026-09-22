@@ -25,9 +25,11 @@ On this local checkout, an ignored toolchain and dependency cache are included u
 - Exact matrices for X, Z, H, S, CZ and raw multipliers; unitarity, finite orders, Pauli commutation and generator conjugation. H uses the paper's phase normalization.
 - A faithful multi-qudit Pauli matrix representation, including the sign extension required by Figure 1; exact normal-form uniqueness and cardinality.
 - The Pauli centralizer theorem: every complex matrix commuting with all Pauli X and Z operators is scalar. Equal conjugation actions of unitaries therefore imply equality up to phase.
-- The nondegenerate alternating phase-space form and preservation by elementary symplectic actions.
-- Exact matrix identities corresponding to **all sixteen Figure 1 rules**. This alone is not soundness of their fully expanded primitive words.
-- The exact derived X, Z, CX, and SWAP words, including SWAP's essential sign. The multiplier word has been reduced to an explicit finite Gauss sum; its stated closed-form sign remains unproved.
+- The nondegenerate alternating phase-space form, the induced action of scalar-fixing Pauli automorphisms, its inner-Pauli kernel, and an explicit splitting in odd dimension.
+- The actual unitary matrix normalizer, its symplectic-action homomorphism, and its kernel: matrices projectively equal to Paulis. This full normalizer includes arbitrary unitary scalars; its identification with the generated circuit group remains open.
+- Concrete Figure 6 A/B/D/E boxes, arbitrary-wire Z/X normalizations, and the literal recursive symplectic normal form with existence and uniqueness (Lemmas 3.4–3.7 and Proposition 3.8). Its syntax count proves the cardinality formula for the existing symplectic group (Lemma 3.9). These are exponent-level results.
+- **Exact soundness of all sixteen fully expanded Figure 1 rules and their rewrite closure**, on arbitrary named wires in every odd prime dimension. This is `Circuit.figure1_sound`; completeness is separate.
+- The exact derived X, Z, CX, SWAP, remote-CZ, and multiplier words on arbitrary named wires, including every scalar. The signed quadratic Gauss-sum evaluation and `det(H)=1` are proved using Vandermonde factorization, finite phase sums, and unitarity. The phase-gate and controlled-Z determinants are checked too.
 - Concrete primitive circuits, all sixteen syntactic rewrite schemas, contextual rewriting, and arbitrary-register unitary denotation.
 - A complete exact rewrite presentation for the ordinary Pauli subgroup, with Weyl phases retained. This is a separate block presentation, not the sixteen-rule Clifford presentation.
 - C0 normalization and completeness for scalar words; exact Figure 1 soundness and completeness in arity zero.
@@ -36,7 +38,7 @@ The precise theorem-to-paper mapping and remaining hypotheses are in **[docs/STA
 
 ## What remains
 
-The main missing work is the exact multiplier Gauss-sum evaluation; the generated Clifford-group/quotient correspondence; the paper's actual normal boxes and normal-form proof; the 42 box relations and their derivation from the 18 symplectic relations; and the explicit projective-to-exact lifting for the sixteen rules. Remaining expanded-word soundness and named-wire transport obligations are tracked separately.
+The main missing work is the generated Clifford-group correspondence and scalar characterization; the primitive-circuit interpretation of the symplectic normal form; the 42 box relations and their derivation from the 18 symplectic relations; and the explicit projective-to-exact lifting for the sixteen rules. Concrete pair normalization and named-wire rule transport are now checked; these do not establish rewriting completeness.
 
 `QuditClifford.Circuit.MainTheorem` is the precise **target proposition**, not a theorem asserted by this development. It is not assumed by the checked proofs. A successful build does not assert this proposition.
 
