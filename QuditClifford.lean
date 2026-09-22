@@ -135,3 +135,14 @@ import QuditClifford.AdjacentZSweepWord
 import QuditClifford.AdjacentCompleteness
 import QuditClifford.AdjacentZNormalHeadCZ
 import QuditClifford.Figure9ConventionCounterexample
+import QuditClifford.Figure9Syntax
+import QuditClifford.Figure9Invariants
+import QuditClifford.Figure9Inverses
+import QuditClifford.Figure9Presented
+import QuditClifford.Figure9Relabel
+import QuditClifford.Figure9PauliErasure
+import QuditClifford.Figure9TwoWire
+import QuditClifford.Figure9Soundness
+import QuditClifford.Figure9Comparison
+import QuditClifford.Figure9BoxCases
+import QuditClifford.Figure9Completeness

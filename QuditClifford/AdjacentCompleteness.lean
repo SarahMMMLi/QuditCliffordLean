@@ -11,7 +11,8 @@ faithful signed-Pauli lifting then recovers exact equality with scalar -omega.
 No normalization, completeness, or presentation-comparison premise remains.
 
 This is the selected-convention Theorem 4.10. It is distinct from the separate
-literal eighteen-rule Figure 9 presentation and from the refuted unrestricted
+literal eighteen-rule Figure 9 theorem, now proved in `Figure9Completeness`,
+and from the refuted unrestricted
 named-wire presentation.
 -/
 noncomputable section

@@ -2,7 +2,7 @@
 
 Lean 4 formalization of **A Complete and Natural Rule Set for Multi-Qudit Clifford Circuits in All Odd Prime Dimensions**, by Bian, Li, Ross, van de Wetering, and Zhao.
 
-**Theorem 4.10 is proved at every arity in every odd prime dimension**, with Figure 1's exact scalar convention. `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves soundness and completeness for the paper's adjacent-gate alphabet. The separate literal Figure 9 presentation and documented inconsistent source formulas are not claimed as fully formalized. No proof uses `sorry` or a project-specific axiom.
+**Theorem 4.10 is proved at every arity in every odd prime dimension**, with Figure 1's exact scalar convention. `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves soundness and completeness for the paper's adjacent-gate alphabet. The corrected eighteen-rule Figure 9 presentation is also proved sound and complete at every arity in `Circuit.figure9MainTheorem`; all 42 Appendix F branches are derived from those rules. Documented inconsistent surrounding source formulas are handled using the selected convention. No proof uses `sorry` or a project-specific axiom.
 
 The selected convention is **Figure 1: exact matrix equality with scalar generator `-ω`**, and raw multipliers `M_a|j⟩=|aj⟩`. Projective equality and symplectic equality remain distinct from exact equality.
 
@@ -44,11 +44,15 @@ On this local checkout, an ignored toolchain and dependency cache are included u
 
 - A kernel-checked countermodel refutes the former unrestricted named-wire target for three qutrits. The corrected target uses the paper’s adjacent primitive alphabet at every derivation step; this is an encoding correction, not a counterexample to the paper. Restricted SWAP transport and arbitrary single-wire proof replay are also established.
 
-The precise theorem-to-paper mapping and remaining hypotheses are in **[docs/STATUS.md](docs/STATUS.md)**. The source convention audit and full obligation inventory are in **[docs/PAPER_AUDIT.md](docs/PAPER_AUDIT.md)**.
+The precise theorem-to-paper mapping and stated hypotheses are in **[docs/STATUS.md](docs/STATUS.md)**. The source convention audit and full obligation inventory are in **[docs/PAPER_AUDIT.md](docs/PAPER_AUDIT.md)**.
 
-## What remains
+## Figure 9 and source conventions
 
-The printed Figure 9 C9 is unsound under the stated raw multiplier convention: it uses g⁻¹ where the exact calculation gives g. `Figure9ConventionCounterexample.lean` proves the failure at d=5, g=2, even after Pauli erasure. A separately corrected eighteen-rule presentation and its comparison with the forty-two box relations remain to be formalized. It is not identified with scalar/Pauli erasure of Figure 1. [The source and proof map](docs/REWRITE_PORT.md) records the remaining distinction and the paper's inconsistent surrounding formulas.
+The updated 22 September 2026 PDF corrects C9 to exponent g. `Figure9Syntax.lean` transcribes exactly its eighteen families, retaining the finite C3 range and the paper's adjacent alphabet. Scalar factors are removed from the source words, while Pauli X/Z remain expanded words. Their deletion is **derived** in `Figure9PauliErasure.lean`, not included as additional rules. `Figure9TwoWire.lean` derives the missing Figure 1 controlled-phase relation from Figure 9 C13/C14 and SWAP transport.
+
+`Figure9Comparison.lean` replays every erased adjacent Figure 1 derivation using the eighteen equations. `Figure9BoxCases.lean` gives all 42 explicit branch theorems. `Figure9Completeness.lean` proves Theorem 4.4, both presentation-comparison directions, and unique derivable normal forms. The reverse comparison is syntactic and does not assume Figure 9 completeness. The old inverse-exponent counterexample is retained as a historical regression check; it does not apply to the updated PDF.
+
+The selected-convention proof obligations are complete. [The source audit](docs/PAPER_AUDIT.md) still records other incompatible surrounding formulas, such as the normal identity's E label and older omega-only scalar prose; these are not asserted as true Lean theorems. The normalizer is noncomputable, so this development does not claim an executable synthesis implementation.
 
 `QuditClifford.Circuit.mainTheorem` proves the proposition `MainTheorem` for the selected exact convention. Every generating step stays inside the adjacent alphabet. The former unrestricted target remains named `NamedWireMainTheorem` and has a checked counterexample; Figure 4 T7 defines a remote CZ by SWAP expansion rather than as an independent primitive.
 
@@ -68,8 +72,8 @@ The printed Figure 9 C9 is unsound under the stated raw multiplier convention: i
 
 The supplied PDF was read without changing it or its TeX sources:
 
-- Title as above; 78 pages; PDF creation timestamp 19 September 2026.
+- Title as above; 78 pages; PDF creation timestamp 22 September 2026, 19:50:08 CEST.
 - Local source: `/Users/sarahli/Desktop/PhD-Projects/papers/QupitCliffGenrel-paper/qudit-quantum.pdf`.
-- SHA-256: `87a80645240abf74545fa6266ed5565cabb790faae674a2ba49d7c338873a542`.
+- SHA-256: `cd2f182a1c3a58dc9a9741f5212e5a4b4561814fa887960987e9403de6874f8e`.
 
 The PDF mixes the selected Figure 1 scalar convention with older omega-only prose. This project follows the user's explicit choice of Figure 1 and records the affected source claims instead of silently treating inconsistent statements as theorems.

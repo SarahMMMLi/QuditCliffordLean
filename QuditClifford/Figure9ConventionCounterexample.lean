@@ -2,18 +2,19 @@ import QuditClifford.AdjacentSymplecticRewrites
 import QuditClifford.CircuitRelabel
 
 /-!
-# The printed Figure 9 C9 under the selected raw multiplier convention
+# Historical inverse-exponent typo in Figure 9 C9
 
-In the supplied PDF, page 24, Figure 9 C9 reads temporally
+In the earlier PDF, page 24, Figure 9 C9 read temporally
 `M_g ; CZ = CZ^(g⁻¹) ; M_g`. The caption uses the same derived multipliers
 as Figure 2. The introduction defines these by `M_a |x⟩ = |a*x⟩`.
 Thus the printed equation, in this library's matrix-order words, is
 `CZ * M_g = M_g * CZ^(g⁻¹)`.
 
-This differs from Figure 1 C9 and its explicit soundness calculation, which
-use exponent `g`. We do not alter either printed rule here. Instead, the
-following concrete `d=5`, `g=2` example proves that Figure 9's printed C9
-fails even on Pauli exponent coordinates under the selected convention.
+The updated PDF of 22 September 2026 corrects the exponent to `g`, matching
+Figure 1 C9 and its exact soundness calculation. `Figure9Syntax` and
+`Figure9Completeness` formalize that corrected presentation. The following
+`d=5`, `g=2` example is retained only as a regression check for the historical
+typo; it does not refute any relation in the updated PDF.
 
 Source locations: `figures/RewriteRules/RewriteRules2.tikz`, node 402;
 `scripts/1-introduction.tex`, raw multiplier definition;

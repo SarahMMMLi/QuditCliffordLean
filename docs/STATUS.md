@@ -1,6 +1,6 @@
 # Formalization status
 
-**Theorem 4.10 is kernel-checked at every arity in every odd prime dimension.** `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves the source-restricted `Circuit.MainTheorem`, using Figure 1's exact scalar `sigma=-omega` and raw multipliers. The proof derives normalization through the literal Z/X grammar, checks all 42 local branches in the adjacent relation, and restores a uniquely determined signed-Pauli correction. No normalization or completeness premise remains. The separate literal Figure 9 presentation and incompatible surrounding source formulas remain distinct from this result. The earlier unrestricted named-wire target is retained and formally refuted at three qutrits.
+**Theorem 4.10 is kernel-checked at every arity in every odd prime dimension.** `Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves the source-restricted `Circuit.MainTheorem`, using Figure 1's exact scalar `sigma=-omega` and raw multipliers. The proof derives normalization through the literal Z/X grammar, checks all 42 local branches in the adjacent relation, and restores a uniquely determined signed-Pauli correction. No normalization or completeness premise remains. The corrected literal eighteen-rule Figure 9 presentation is now also sound and complete at every arity (`figure9MainTheorem`), with all 42 box branches derived from it. Incompatible surrounding source formulas remain explicitly documented convention repairs. The earlier unrestricted named-wire target is retained and formally refuted at three qutrits.
 
 Every item marked checked below names an existing proved Lean declaration. A relation's raw-matrix soundness, its expanded circuit soundness, and completeness of the generated rewrite system are separate claims. No rewrite system here has a constructor that admits arbitrary semantic equality as a rewrite.
 
@@ -76,7 +76,7 @@ Every item marked checked below names an existing proved Lean declaration. A rel
 | Restricted Pauli kernel and exact lifting | `adjacentPresentedToSymplectic_ker_eq_adjacentPresentedPauliSubgroup`, `AdjacentPauliWords.existsUnique_signedPauliWord`, `adjacentSymplecticDerives_lift_unique`, `adjacentDerives_of_symplecticDerives_of_denote_eq` | Concrete guarded subgroup, normality, Weyl normalization, faithful interpretation, and unique exact correction, all at arbitrary arity. |
 | Lemma 4.2; Proposition 4.3, concrete sweeps | `ZNormal.adjacentSymplecticDerives_pushGate`, `XNormal.adjacentSymplecticDerives_pushWord`, `adjacentSymplecticNormalizes` | Typed dirty residuals enforce the source grammar. Recursion reduces the number of wires; all H/S/CZ branches and the A/B collision are covered. |
 | Theorem 4.10, every arity | `Circuit.adjacentFigure1Complete`, `Circuit.adjacentDerives_iff_denote_eq`, `Circuit.mainTheorem` in `AdjacentCompleteness.lean` | Exact restricted rewriting iff equality of complex matrices, for all odd primes and units of order d-1. `MainTheorem d` is proved with only its stated hypotheses. |
-| Printed Figure 9 C9 discrepancy | `Figure9ConventionCounterexample.generator_order`, `.printedC9_not_symplectically_sound`, `.not_adjacentSymplecticDerives_printedC9`, `.printedC9_denote_ne` | A primitive generator 2 modulo 5 gives distinct second-wire Z exponents 2 and 3. The error persists under Pauli/scalar erasure; this is a soundness failure, not by itself a refutation of one-way completeness. |
+| Historical Figure 9 C9 discrepancy, corrected in the 22 September PDF | `Figure9ConventionCounterexample.generator_order`, `.printedC9_not_symplectically_sound`, `.not_adjacentSymplecticDerives_printedC9`, `.printedC9_denote_ne` | A primitive generator 2 modulo 5 gives distinct second-wire Z exponents 2 and 3. The old inverse-exponent error persists under Pauli/scalar erasure. The current PDF and `Figure9Syntax` use g and are not refuted by this historical check. |
 
 ## Derived gates: actual circuit-word identities
 
@@ -116,11 +116,22 @@ These declarations use the intended raw matrices and preserve every scalar:
 
 The raw-matrix table alone does **not** establish `Circuit.Figure1Sound`. That stronger theorem is now separately proved by `Circuit.figure1_sound`, using exact derived-word identities, named-wire transport, and contextual closure. These soundness results alone do not establish completeness; the full adjacent case is proved separately in `AdjacentCompleteness.lean`.
 
-## Remaining literal-source distinction
+## Completed literal Figure 9 proof
 
-Theorem 4.4's literal eighteen-rule Figure 9 presentation has not been silently replaced by the auxiliary scalar/Pauli-erased Figure 1 presentation. Its printed C9 is unsound under the stated raw multiplier convention: `Figure9ConventionCounterexample.printedC9_not_symplectically_sound` proves this at d=5, g=2, and `printedC9_denote_ne` proves unequal exact matrices. A separately corrected C9, with exponent g instead of g⁻¹, still requires an explicit presentation comparison. The full selected-convention Figure 1 theorem is proved independently of that identification.
+The updated PDF corrects C9 to g. `Figure9Syntax.lean` has exactly C1--C18, with finite C3, actual expanded source macros, and scalar-free adjacent endpoints for every generating step. `Figure9Invariants.lean` proves adjacency and scalar freedom are preserved and that a primitive scalar deletion is not a Figure 9 derivation.
 
-Sections 2–3, all 42 restricted local cases, the recursive Z/X sweeps, and faithful signed-Pauli lifting now support `Circuit.mainTheorem` at every arity. Source discrepancies recorded in `PAPER_AUDIT.md` are not asserted as true formulas. The exact normalizer remains noncomputable; no executable synthesis algorithm is claimed.
+| Obligation | Checked declaration/module | Scope |
+|---|---|---|
+| Source group and cancellation | `Figure9Inverses`, `Figure9Presented` | H⁴ follows from C2 and finite C3; no extra deletion or semantic-equality rule. |
+| Derived Pauli erasure | `figure9Derives_X`, `figure9Derives_Z` in `Figure9PauliErasure` | C1--C4 imply expanded X/Z equal identity; no Pauli-deletion axioms. |
+| Two-wire presentation bridge | `figure9Derives_figure1_C12` in `Figure9TwoWire` | Figure 9 C13/C14, SWAP transport, and group arithmetic derive Figure 1 C12. |
+| All eighteen rules sound | `figure9Rule_sound`, `figure9Derives_sound` | Symplectic exponent-action equality, not exact matrix equality. |
+| Syntactic reverse comparison | `adjacentSymplecticDerives_figure9` | Replays every guarded erased Figure 1 derivation after scalar removal. Does not assume Figure 9 completeness. |
+| All 42 Appendix F branches | `Figure9BoxCases` | 42 explicit theorem statements with scalar-free expanded box endpoints. |
+| Theorem 4.4 | `figure9MainTheorem`, `figure9Derives_iff_symplecticAction_eq` | Sound and complete at every arity for odd prime d and g of order d-1. |
+| Complete presentation comparison and normalization | `figure9Derives_iff_adjacentSymplecticDerives`, `existsUnique_figure9Normal` | Actual contextual derivations and unique literal normal forms. |
+
+There are no pending selected-convention proof obligations. Source discrepancies recorded in `PAPER_AUDIT.md` are not asserted as true formulas. The exact normalizer remains noncomputable; no executable synthesis algorithm is claimed.
 
 ## Verification discipline
 
@@ -128,4 +139,4 @@ The `Audit.lean` check traverses every kernel-safe total project declaration, in
 
 The proofs use standard Lean/mathlib foundations. The inspected main matrix and faithfulness declarations report only `propext`, `Classical.choice`, and `Quot.sound`; no custom axiom or admitted paper theorem was introduced. The target `Circuit.MainTheorem` is not used as a hypothesis in the checked modules.
 
-The modules named above were checked with Lean 4.19.0 and mathlib v4.19.0. A successful build confirms the declarations present in the repository; it does not change the pending obligations in this document into completed theorems. See `PAPER_AUDIT.md` for source convention repairs and the detailed theorem inventory.
+The modules named above were checked with Lean 4.19.0 and mathlib v4.19.0. A successful build confirms the declarations present in the repository; the scope of each declaration remains the one stated above. See `PAPER_AUDIT.md` for source convention repairs and the detailed theorem inventory.

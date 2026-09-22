@@ -1,6 +1,6 @@
 # Source map for the checked Figure 1 completeness proof
 
-`Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves exact soundness and completeness at every arity under the selected Figure 1 scalar convention. This document records the source mapping, restricted proof transport, and the separate remaining literal Figure 9 distinction. Matrix classification alone is not used as a replacement for rewrite normalization.
+`Circuit.mainTheorem` in `AdjacentCompleteness.lean` proves exact soundness and completeness at every arity under the selected Figure 1 scalar convention. This document records the source mapping, restricted proof transport, and the proved comparison with the corrected literal Figure 9 presentation. Matrix classification alone is not used as a replacement for rewrite normalization.
 
 ## Current Lean port
 
@@ -27,13 +27,11 @@ derivations, using the literal Figure 6 words and selected raw multipliers:
 | Three-wire DD/CZ | `SymplecticThreeWireDD.lean`, `SymplecticThreeWireDDNonzero.lean` | 4 of 4 |
 | Three-wire BB/CZ | `SymplecticThreeWireBB.lean` | 4 of 4 |
 
-All 42 printed case branches are now checked in the named-wire helper
-presentation. Their derivation from the separate literal Figure 9 presentation
-is still open; this table does not assert Theorem 4.4. It also does not by itself
-show restricted replay by itself; that separate proof is now provided by
+All 42 printed case branches are checked in the named-wire helper
+presentation. Their source-restricted replay is proved by
 `AdjacentTwoWireReplay.lean` and `AdjacentThreeWireReplay.lean`.
 `AdjacentBoxCases.lean` and `AdjacentThreeWireBoxCases.lean` expose all 42
-canonical source branches: 25 exact and 17 explicitly erased. `MultiplierRewrites.lean` and `MultiplierControlledZRewrites.lean` derive
+canonical source branches: 25 exact and 17 explicitly erased. `Figure9Comparison` now transfers all of these to the corrected literal eighteen-rule presentation, and `Figure9BoxCases` exposes their 42 explicit theorem statements. `MultiplierRewrites.lean` and `MultiplierControlledZRewrites.lean` derive
 the all-unit multiplier laws from finite C3 and primitive-generator C4/C9.
 `ThreeWireControlledRewrites.lean` and `ThreeWirePhaseTransport.lean` derive
 the exact adjacent/remote-CZ commutations and reverse C15.
@@ -235,7 +233,7 @@ constructor there is the identical equation with identical definitions.
 | C6 | `CZ^d = id` | `order-CZ` |
 | C7 | `SWAP² = id` | `order-Ex` |
 | C8 | upper S commutes with CZ | `comm-CZ-S↑` |
-| C9 | multiplier through CZ with printed exponent `g⁻¹` | Unsound for the stated raw multiplier; the required exponent is `g`. See `Figure9ConventionCounterexample.lean`. |
+| C9 | multiplier through CZ with corrected exponent `g` | Matches Figure 1 C9; the updated PDF fixes the historical inverse-exponent typo. |
 | C10 | S transported through SWAP | `semi-Ex-S↑` |
 | C11 | H transported through SWAP | `semi-Ex-H↑` |
 | C12 | CZ commutes with SWAP | `Paper-V0/Lemmas.agda`, `Ex-Conjugation.lemma-Ex-CZ` |
@@ -298,25 +296,13 @@ presentation-comparison step.
 3. `AdjacentNormalFormSweeps` assembles the two sweeps by arity induction. `AdjacentNormalRewriteInduction` uses the proved identity seed and semantic label uniqueness to obtain erased completeness from actual normalization.
 4. The concrete restricted signed-Pauli subgroup has proved normality, faithful normal words, and exactly the erasure kernel. `AdjacentPauliLifting` restores the unique correction, and `AdjacentCompleteness.mainTheorem` (in namespace `Circuit`) states the exact all-arity result without a normalization premise.
 
-The literal eighteen-rule Figure 9 relation remains a separate source-convention and presentation-comparison task. Neither the release's fifteen-family `Simplified` theorem nor the proved erased Figure 1 theorem is renamed to assert it. The old unrestricted named-wire completeness target remains formally false.
+5. `Figure9Syntax` independently transcribes exactly C1--C18 of the corrected PDF. `Figure9Inverses` derives a group using finite C3; `Figure9PauliErasure` derives expanded X/Z deletion from C1--C4. `Figure9TwoWire` transports C13/C14 through SWAP and derives Figure 1 C12. `Figure9Comparison` then replays the entire erased adjacent Figure 1 relation into Figure 9 by induction. `Figure9BoxCases` exposes all 42 branches.
+6. `Figure9Soundness` checks all eighteen source equations on exponent coordinates. `Figure9Completeness` combines this independent soundness check with the syntactic reverse comparison to prove Theorem 4.4 and unique derivable normal forms at every arity.
 
-## Checked Figure 9 C9 discrepancy
+The release's fifteen-family `Simplified` theorem is not renamed as the literal eighteen-rule theorem. The old unrestricted named-wire completeness target remains formally false.
 
-The supplied PDF p. 24 and `figures/RewriteRules/RewriteRules2.tikz:318` print
-`M_g ; CZ = CZ^(g⁻¹) ; M_g` in temporal order. The caption points to the same
-Figure 2 raw multiplier `M_g|x⟩=|gx⟩`. The manuscript's own exact calculation
-in `scripts/appendix/sectiontwoproofs.tex:994,1011–1012` instead gives
-`CZ*M_g = M_g*CZ^g` in matrix order.
+## Historical Figure 9 C9 discrepancy, resolved
 
-`Figure9ConventionCounterexample.lean` proves that g=2 has order 4 modulo 5
-and that the printed two sides send first-wire X to different second-wire Z
-exponents, 2 and 3. It proves unequal exact matrices and nonderivability even
-in the explicitly Pauli-erased Figure 1 relation. Thus a literal sound
-presentation comparison is impossible. This is not merely a scalar issue,
-and inverting every multiplier convention would also require changing C4.
+The earlier PDF printed `M_g ; CZ = CZ^(g⁻¹) ; M_g` in temporal order. The user corrected the attached PDF on 22 September 2026 to exponent g, matching the exact calculation in `scripts/appendix/sectiontwoproofs.tex`. The current `Figure9Syntax.C9` uses g.
 
-A future corrected Figure 9 presentation must explicitly replace this exponent
-by g, retain exactly its eighteen families, and derive its Pauli erasure and
-comparison maps. The currently proved Figure 1 main theorem needs none of
-these unproved comparison premises. Unsoundness of the printed rule alone
-does not refute completeness understood only as a one-way derivability claim.
+`Figure9ConventionCounterexample.lean` is retained as a historical regression check: g=2 has order 4 modulo 5, and the old inverse-exponent equation sends first-wire X to distinct second-wire Z exponents, 2 and 3. It is not a counterexample to the updated PDF. The corrected presentation, its derived Pauli erasure, both comparison directions, all 42 box branches, and Theorem 4.4 are now proved in Lean.
