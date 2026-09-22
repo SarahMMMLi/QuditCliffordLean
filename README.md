@@ -2,7 +2,7 @@
 
 Lean 4 formalization of **A Complete and Natural Rule Set for Multi-Qudit Clifford Circuits in All Odd Prime Dimensions**, by Bian, Li, Ross, van de Wetering, and Zhao.
 
-**Status: partial. The paper's main completeness theorem (Theorem 4.10) is not yet proved.** The project contains checked matrix, Pauli, symplectic, circuit, and rewrite results. Unfinished results are recorded as proof obligations, not filled with `sorry` or assumed as axioms.
+**Status: partial. Theorem 4.10 is proved for zero and one qudit; completeness for two or more qudits remains open.** Exact soundness holds at every arity. Unfinished results are recorded as proof obligations, not filled with `sorry` or assumed as axioms.
 
 The selected convention is **Figure 1: exact matrix equality with scalar generator `-ω`**, and raw multipliers `M_a|j⟩=|aj⟩`. Projective equality and symplectic equality remain distinct from exact equality.
 
@@ -35,17 +35,21 @@ On this local checkout, an ignored toolchain and dependency cache are included u
 - The exact derived X, Z, CX, SWAP, remote-CZ, and multiplier words on arbitrary named wires, including every scalar. The signed quadratic Gauss-sum evaluation and `det(H)=1` are proved using Vandermonde factorization, finite phase sums, and unitarity. The phase-gate and controlled-Z determinants are checked too.
 - Concrete primitive circuits, all sixteen syntactic rewrite schemas, contextual rewriting, and arbitrary-register unitary denotation.
 - A complete exact rewrite presentation for the ordinary Pauli subgroup, with Weyl phases retained. This is a separate block presentation, not the sixteen-rule Clifford presentation.
-- C0 normalization and completeness for scalar words; exact Figure 1 soundness and completeness in arity zero.
-- Syntactic inverse words and cancellation derived from Figure 1; the genuine group of words modulo those rewrites; exact Weyl commutation `ZX=omega*XZ`, all H/S/CZ Pauli pushing identities, and SWAP transport. Its matrix interpretation is a surjective homomorphism. Proving its injectivity is precisely the remaining completeness problem.
+- C0 normalization and completeness for scalar words; exact Figure 1 soundness and completeness in arities zero and one. `figure1Complete_one` proves the one-qudit case by syntactic E-A box normalization and exact Pauli lifting, for all odd primes and primitive generators.
+- Syntactic inverse words and cancellation in the named-wire helper presentation; exact Weyl commutation `ZX=omega*XZ`, all H/S/CZ Pauli pushing identities, and SWAP transport. The helper quotient maps surjectively to the generated matrix group. Its unrestricted injectivity is not the paper’s completeness target; see the encoding distinction below.
 - A separate scalar-erased rewrite relation, with a proved lift of every derivation to the exact Figure 1 rules plus an explicit scalar. C0 removes the correction when the matrices are equal, so exact completeness is reduced to completeness of this explicit projective presentation.
+- The signed Pauli subgroup inside the actual Figure 1 word quotient is normal, faithfully interpreted, and has uniquely derivable signed-Pauli normal words. Explicitly deleting scalar/X/Z words gives a syntactic symplectic quotient with exactly this kernel. Every erased derivation lifts with a unique signed-Pauli correction, and exact matrix equality removes that correction.
+- All 42 Appendix F case branches are actual exact or explicitly Pauli-erased derivations in the named-wire helper presentation. This includes all AB, BB, and DD branches. The exact X-normal phase sweep is proved by recursion at every arity. These results still need transport to the source-restricted presentation before claiming its normalization theorem.
+
+- A kernel-checked countermodel refutes the former unrestricted named-wire target for three qutrits. The corrected target uses the paper’s adjacent primitive alphabet at every derivation step; this is an encoding correction, not a counterexample to the paper. Restricted SWAP transport and arbitrary single-wire proof replay are also established.
 
 The precise theorem-to-paper mapping and remaining hypotheses are in **[docs/STATUS.md](docs/STATUS.md)**. The source convention audit and full obligation inventory are in **[docs/PAPER_AUDIT.md](docs/PAPER_AUDIT.md)**.
 
 ## What remains
 
-The main missing work is the 42 box relations and their derivation from the 18 symplectic relations, normalization by those rewrites, and the symplectic-to-projective presentation argument. The final scalar-erased-to-exact lifting is proved. `figure1Complete_iff_derivablyNormalizes` gives an alternative precise target: derive each word's concrete exact normalization. Its matrix interpretation and uniqueness are already proved. [The external proof-source map](docs/REWRITE_PORT.md) records the remaining Lean port.
+The main missing work is source-restricted syntactic normalization for two or more qudits and transport of the established helper proofs into that presentation. The signed-Pauli-and-scalar lifting is proved for the named-wire helper relation, but its arbitrary-arity completeness target was too broad. The separate literal eighteen-rule Figure 9 presentation and its comparison with the forty-two box relations also remain unfinished. [The source and proof map](docs/REWRITE_PORT.md) records the distinctions and current port.
 
-`QuditClifford.Circuit.MainTheorem` is the precise **target proposition**, not a theorem asserted by this development. It is not assumed by the checked proofs. A successful build does not assert this proposition.
+`QuditClifford.Circuit.MainTheorem` in `AdjacentPresentation.lean` is the corrected **target proposition**, not a theorem asserted at arbitrary arity. It uses adjacent primitive CZ gates and requires adjacent instances at every rewrite step. The former unrestricted target is retained as `NamedWireMainTheorem` for auditing. Figure 4 T7 defines a remote CZ by SWAP expansion; it is not an additional independent primitive. The zero- and one-qudit completeness proofs have been checked in the restricted relation as well. A successful build does not assert the remaining arbitrary-arity proposition.
 
 ## Layout and conventions
 

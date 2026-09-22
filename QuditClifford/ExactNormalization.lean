@@ -1,11 +1,12 @@
 import QuditClifford.ExactNormalForm
 import QuditClifford.MultiplierSoundness
 
-/-! # The remaining explicit rewrite-normalization obligation
+/-! # Exact normalization in the named-wire helper relation
 
 A concrete normal primitive word is obtained from the proved unique exact
 matrix normal form. Its interpretation and uniqueness are proved here.
-Completeness is equivalent to deriving this normalization from Figure 1.
+Named-wire completeness is equivalent to deriving this normalization from
+the helper schemas. `AdjacentNormalization` states the source-restricted target.
 No constructor or theorem turns semantic equality into a rewrite derivation.
 -/
 noncomputable section
@@ -45,8 +46,9 @@ theorem normalizeWord_idempotent (hd : Odd d) (w : Word n) :
     normalizeWord hd (normalizeWord hd w) = normalizeWord hd w :=
   normalizeWord_eq_of_denote_eq hd (denote_normalizeWord hd w)
 
-/-- The exact outstanding constructive obligation for Theorem 4.10: each word
-must be related to this concrete normal word by the displayed rewrite rules. -/
+/-- The named-wire normalization property: each word must be related to its
+concrete normal word by the helper rules. This is not assumed and is stronger
+than the adjacent normalization property used for the paper's theorem. -/
 def DerivablyNormalizes (hd : Odd d) (g : (ZMod d)ˣ) : Prop :=
   ∀ w : Word n, Derives g w (normalizeWord hd w)
 

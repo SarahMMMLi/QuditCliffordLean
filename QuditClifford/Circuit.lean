@@ -3,16 +3,17 @@ import QuditClifford.Gates
 import QuditClifford.Presentation
 
 /-!
-# Concrete primitive circuits and the Figure 1 completeness target
+# Concrete named-wire circuits and Figure 1 helper schemas
 
-A circuit is a word of the paper's primitive `-ω,H,S,CZ` gates on named wires.
+A circuit is a word of `-ω,H,S,CZ` gates on named wires.
 Lists are in MATRIX order (the rightmost gate acts first). Derived X, Z, M,
 CX and SWAP are actual words, not additional primitive generators.
 
 The propositions at the end separate exact soundness from rewrite
 completeness. `MultiplierSoundness.lean` proves soundness of these fully
-expanded words in odd prime dimension. Constructing rewrite derivations of
-every exact matrix equality remains the positive-arity completeness target.
+expanded words in odd prime dimension. Exact completeness is proved for zero
+and one wire. Arbitrary named CZ letters enlarge the paper's adjacent alphabet;
+the source-faithful target lives in `AdjacentPresentation.lean`.
 -/
 
 noncomputable section
@@ -189,14 +190,17 @@ prime dimension by `figure1_sound` in `MultiplierSoundness.lean`. -/
 def Figure1Sound (g : (ZMod d)ˣ) : Prop :=
   ∀ a b : Word n, Derives g a b → denote d a = denote d b
 
-/-- Unproved completeness target of Theorem 4.10 at a fixed arity. The intended
-final theorem must prove this for odd prime d and g of order d-1. -/
+/-- Completeness of the enlarged named-wire presentation at a fixed arity.
+It is proved for arities zero and one. For three or more wires this target
+is stronger than the paper's adjacent-generator presentation: a remote CZ
+here is an independent primitive, whereas Figure 4 T7 expands it using SWAPs.
+See `AdjacentPresentation` for the source-faithful completeness target. -/
 def Figure1Complete (g : (ZMod d)ˣ) : Prop :=
   ∀ a b : Word n, denote d a = denote d b → Derives g a b
 
-/-- The paper's full main theorem, recorded as a proposition to be proved.
-No assertion of this proposition is used in the checked development. -/
-def MainTheorem (d : ℕ) [NeZero d] : Prop :=
+/-- The former, overly broad named-wire target. It is retained under an explicit
+name for auditing and is not the paper's main theorem. No proof assumes it. -/
+def NamedWireMainTheorem (d : ℕ) [NeZero d] : Prop :=
   d.Prime → Odd d → ∀ g : (ZMod d)ˣ, orderOf g = d-1 →
     ∀ n, Figure1Sound (n := n) g ∧ Figure1Complete (n := n) g
 

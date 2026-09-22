@@ -1,8 +1,108 @@
 # Source map for the remaining rewrite-completeness proof
 
 This is a source audit and port plan, not a Lean completeness theorem. The
-current Lean matrix normal form and generated-group results do not prove that
-equal circuits are related by the paper's rewrite rules.
+matrix normal form and generated-group results alone do not prove that equal
+circuits are related by the paper's rewrite rules. The one-qudit completeness
+specialization is now independently proved by syntactic normalization in Lean.
+
+## Current Lean port
+
+`SymplecticRewrites.lean` defines an explicit erasure of the actual Figure 1
+rules, adding only scalar/X/Z deletion. This is not the literal eighteen-rule
+Figure 9 relation. `PresentedPauliNormality.lean`, `PauliWordRewrites.lean`,
+`SymplecticKernel.lean`, and `PauliLifting.lean` prove its exact signed-Pauli
+kernel and lift every derivation with a unique correction. Consequently
+`figure1Complete_iff_symplecticErasureComplete` identifies the helper exact
+and erased completeness properties. Both unrestricted properties are false
+at three qutrits, as proved below. The source-restricted target and its
+proof-transport obligation are distinct.
+
+The following local cases have been ported to actual exact or erased Figure 1
+derivations, using the literal Figure 6 words and selected raw multipliers:
+
+| Box family | Lean module | Checked cases |
+| --- | --- | ---: |
+| One-wire A/E | `SymplecticOneWire.lean` | 6 of 6 |
+| Two-wire A/CZ | `SymplecticTwoWireA.lean` | 2 of 2 |
+| Two-wire B/H/S | `SymplecticTwoWireB.lean` | 9 of 9 |
+| Two-wire D/H/S/CZ | `SymplecticTwoWireD.lean`, `SymplecticTwoWireDCZ.lean` | 9 of 9 |
+| Three-wire B/CZ | `SymplecticThreeWireB.lean` | 2 of 2 |
+| Two-wire AB/CZ | `SymplecticTwoWireAB.lean`, `SymplecticTwoWireABNonzero.lean` | 6 of 6 |
+| Three-wire DD/CZ | `SymplecticThreeWireDD.lean`, `SymplecticThreeWireDDNonzero.lean` | 4 of 4 |
+| Three-wire BB/CZ | `SymplecticThreeWireBB.lean` | 4 of 4 |
+
+All 42 printed case branches are now checked in the named-wire helper
+presentation. Their derivation from the separate literal Figure 9 presentation
+is still open; this table does not assert Theorem 4.4. It also does not by itself
+show that every helper proof can be replayed in the restricted adjacent
+presentation described below. `MultiplierRewrites.lean` and `MultiplierControlledZRewrites.lean` derive
+the all-unit multiplier laws from finite C3 and primitive-generator C4/C9.
+`ThreeWireControlledRewrites.lean` and `ThreeWirePhaseTransport.lean` derive
+the exact adjacent/remote-CZ commutations and reverse C15.
+`SymplecticThreeWireB.lean` extends C15 to all powers and proves both B/CZ
+cases exactly. `BoxDuality.lean` proves exact B/D and BB/DD Fourier duality,
+providing syntactic transport between the remaining three-wire families.
+
+`OneQuditCompleteness.lean` uses the six A/E cases in an actual induction on
+primitive words. Concrete E-A label uniqueness and exact lifting then give
+`figure1Complete_one`, including `-ω`, for all odd primes and primitive roots.
+`RelabelRewrites.lean` proves arbitrary injective wire transport of every
+schema and derivation, and `WireContextRewrites.lean` proves interchange of
+embedded words with disjoint supports. `NormalIdentity.lean` derives the exact recursive
+identity normal word at every arity, with the Figure 6-compatible E(0) seed.
+`XNormalPhaseRewrites.lean` proves phase absorption through every D/E layer by
+an actual recursive exact derivation. `NormalRewriteInduction.lean` supplies
+word induction from a stated gate-closure hypothesis in the helper relation;
+it does not prove that hypothesis. The remaining normalization task must use
+the paper’s adjacent primitive alphabet and source-restricted rewrite relation.
+
+## Adjacent source syntax versus the named-wire helper syntax
+
+The paper’s Definition 4.1 specifies adjacent dirty CZ gates (printed pp. 22–23;
+`scripts/4-completeness.tex`, lines 40–48). Figure 4 T7 on printed p. 15 defines
+a CZ across an idle wire by a SWAP–CZ–SWAP word. The pinned
+`Circuit/Base.agda` lines 47–54 has only arity-one/arity-two gates and shifts;
+`Symplectic/Syntactics/Gates.agda` lines 59–62 declares CZ at arity two, and
+lines 193–197 defines `CZ02` by the SWAP expansion. It has no independent
+nonadjacent primitive CZ.
+
+The original Lean named-wire helper alphabet did have such extra letters.
+Its two structural equations do not automatically equate them with routed
+macros. The attempted identification is formally refuted below; it cannot be
+inferred from equal matrices. `AdjacentCircuit.lean` now defines
+the canonical adjacent alphabet explicitly. `AdjacentPresentation.lean`
+restricts **both sides of each rule**, and takes its own contextual closure;
+it proves adjacency is preserved throughout derivations. Restricting only the
+inputs while allowing arbitrary named-wire intermediate derivations would be
+a weaker result and is deliberately not used as the main target.
+
+`Circuit.MainTheorem` now refers to this source-restricted relation. The former
+unrestricted proposition is named `NamedWireMainTheorem`. Zero- and one-qudit
+completeness transfer because all words at those arities are adjacent.
+The 42 helper derivations, recursive sweeps, and Pauli lifting remain valid
+as stated, but their transport to the restricted relation must be supplied
+before using them to prove the paper’s multiwire completeness theorem.
+No coherence equation or semantic-equality rule has been added to conceal
+this distinction.
+
+The obstruction is now **proved in Lean**, not only suspected:
+`NamedWireCountermodel.lean` interprets the named-wire gates as finite matrices
+over `ZMod 3`, reversing every primitive CZ coupling. Kernel-checked finite
+calculations verify all sixteen schema families and all structural cases.
+The derived remote coupling differs from the independent direct CZ coupling.
+`not_figure1Complete` and `not_namedWireMainTheorem_three` therefore refute the
+old unrestricted target at three qutrits. The actual adjacent source excludes
+the independent remote letter and is not refuted by this model: on a line,
+the reversed adjacent couplings can be obtained by alternating local sign
+changes, while adding the independent third edge creates the discrepancy.
+
+`AdjacentWireRewrites.lean` starts restricted replay with exact C7/C10/C11
+transport, including opposite-wire H/S transport without reverse-CZ aliases.
+`AdjacentOneWireRewrites.lean` replays any exact one-wire proof on a chosen wire.
+`AdjacentNormalCircuit.lean` and `AdjacentExactNormal.lean` prove the entire
+normal syntax remains adjacent. `AdjacentNormalization.lean` identifies the
+remaining source theorem precisely with restricted exact normalization.
+
 
 ## Pinned external source
 
@@ -191,46 +291,36 @@ presentation-comparison step.
    Lean boxes and the release's `Normalization/Section.agda` use the concrete
    Figure 6 definitions. Do not use the stale tables to change those words.
 
-## Lowest-friction Lean route
+## Remaining Lean route after the alphabet correction
 
-1. Add a literal Figure 9 relation and a separate auxiliary symplectic
-   relation. Reuse `Presentation.Derives` with explicit relabeling and
-   disjoint-wire commutation. A list representation removes the Agda tree
-   associativity bookkeeping. For long group-algebra chains, work in the
-   quotient by this **syntactically generated** congruence and recover a
-   derivation from quotient equality, as `PresentedCircuit.lean` already
-   does with `classWord_eq_iff_derives`. This permits Lean's group and power
-   lemmas without replacing rewriting by matrix equality. Keep the Figure 1
-   exact relation distinct.
-2. Prove the small bridge from Figure 9 to the auxiliary relation first.
-   Use the pinned `Paper-V0`/`Paper-V1` comparison chains as a guide, checking
-   C13/C14 and the multiplier inversion explicitly. This is the source
-   correspondence obligation most likely to be missed by a mechanical port.
-3. Port the one-wire A/E chains, then the two-wire D chains; obtain B chains
-   through the source's explicit duality. Port CZ-through-A/AB and the
-   three-wire DD, BB, and B cases. Each result must have type
-   `Presentation.Derives R lhs rhs` for concrete words.
-4. Prove that each primitive gate can be pushed through the current literal
-   recursive normal-form word, using these local derivations. The existing
-   `SymplecticNormalForm` uniqueness theorem and `NormalCircuit` action theorem
-   can discharge semantic uniqueness after a **syntactic** reduction theorem
-   has been proved. There is no need to port Agda's generic coset tower if a
-   direct induction on the existing Lean grammar suffices.
-5. Apply `Presentation.complete_of_normal_forms`. Only then label the result
-   symplectic rewrite completeness. Next derive the required Pauli-corrected
-   Figure 9 equations from the exact Figure 1 relation and discharge Pauli
-   normalization. `ProjectiveRewrites.lean` now supplies the final exact
-   scalar lift: `figure1Complete_of_projectiveComplete` takes the still-open
-   `Figure1ProjectiveComplete` as its input. The generated matrix-group
-   classification cannot replace that missing syntactic derivation theorem.
+1. Replay the checked local helper derivations in the canonical adjacent
+   presentation. Use `AdjacentDerives` or its explicitly defined scalar/Pauli
+   erasure, including restricted group and cancellation infrastructure.
+   `AdjacentWireRewrites` and `AdjacentOneWireRewrites` begin this replay.
+   Adjacent endpoints alone do not certify that a helper proof stays adjacent.
+2. Prove the recursive Z/X sweeps on `AdjacentWord` and `ZSweepWord`, then
+   normalization under every adjacent primitive generator. The 42 helper
+   branches supply the algebraic chains; their restricted derivations must
+   still be checked. `NormalSweepSyntax` supplies the dirty grammar and its
+   first-wire invariant, not the normalization theorem.
+3. Transport the proved Pauli/scalar lifting to the restricted relation.
+   `Circuit.adjacentFigure1Complete_iff_derivablyNormalizes`
+   in `AdjacentNormalization.lean` records the exact remaining reduction target.
+   All concrete exact normal words are already proved adjacent. Neither
+   semantic uniqueness nor cardinality replaces syntactic reduction.
+4. Separately define the literal eighteen-rule Figure 9 presentation and
+   prove its correspondence with the restricted auxiliary relation and all
+   42 box cases. Preserve its multiplier convention and the selected exact
+   scalar distinction. Only then claim the separate Theorem 4.4 statement.
 
-No Lean axioms, placeholder proofs, or semantic-equality rewrite constructors
-are introduced by this audit document.
+A possible alternative for the exact theorem is to port the release's
+`Paper-V1/Presentation.agda` projective result directly on its adjacent
+alphabet, then replay the scalar lifting in that same alphabet. Its 15
+nonscalar schemas are close to the printed C1–C15, but both convention
+translation and syntactic presentation maps still require proofs. This
+would not automatically establish the separate Figure 9 theorem.
 
-For the main exact Figure 1 theorem alone, a second possible route is to port
-the release's `Paper-V1/Presentation.agda` projective result directly: its 15
-nonscalar axiom families closely match the current Lean C1–C15. Then use the
-proved concrete scalar-lifting theorem. This route still requires translating
-the S/multiplier conventions and proving the syntactic presentation maps. It
-would establish the main theorem without automatically discharging the
-separate, literal Figure 9 statement of Theorem 4.4.
+The former unrestricted `Figure1ProjectiveComplete` is **not** a remaining
+target to prove: its equivalence with the refuted named-wire exact target
+rules out that route. No new coherence axiom or semantic-equality rewrite
+constructor is introduced to repair the mismatch.
