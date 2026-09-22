@@ -1,0 +1,15 @@
+name: Lean
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proofs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Audit proof dependencies
+        run: lake env lean -DwarningAsError=true Audit.lean
